@@ -6,8 +6,7 @@
   <h1 align="center">Reloaded Rust Test and Coverage GitHub Action</h1>
 
   <p align="center">
-    <a href="https://github.com/Reloaded-Project/devops-rust-test-and-coverage/actions"><img alt="GitHub Actions status" src="https://github.com/Reloaded-Project/devops-rust-test-and-coverage/workflows/main/badge.svg"></a>
-    <a href="https://codecov.io/gh/Reloaded-Project/devops-rust-test-and-coverage"><img src="https://codecov.io/gh/Reloaded-Project/devops-rust-test-and-coverage/branch/main/graph/badge.svg" alt="Coverage Status"></a>
+    <a href="https://github.com/Reloaded-Project/devops-rust-test-and-coverage/actions/workflows/test-workflow.yml"><img alt="GitHub Actions status" src="https://github.com/Reloaded-Project/devops-rust-test-and-coverage/actions/workflows/test-workflow.yml/badge.svg"></a>
     <a href="https://github.com/Reloaded-Project/devops-rust-test-and-coverage/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   </p>
 </div>
