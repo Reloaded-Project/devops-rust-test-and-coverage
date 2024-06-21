@@ -40,9 +40,10 @@ jobs:
           - os: windows-latest
             target: i686-pc-windows-msvc
             use-cross: false
-          - os: windows-latest
-            target: aarch64-pc-windows-msvc
-            use-cross: false
+          # No available runner. Uncomment when available.
+          # - os: windows-latest
+          #   target: aarch64-pc-windows-msvc
+          #   use-cross: false
           - os: macos-13 # Intel
             target: x86_64-apple-darwin
             use-cross: false
@@ -63,7 +64,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sewer56/prs-rs
-          ref: d08599ed5473616f57d57a0966939e1a5dbda9b4
+          ref: 149060527e685360687d7332742ac016b39af8a7
       - name: Test Coverage Build
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
         with:
@@ -84,7 +85,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sewer56/prs-rs
-          ref: d08599ed5473616f57d57a0966939e1a5dbda9b4
+          ref: 149060527e685360687d7332742ac016b39af8a7
       - name: Test Nightly/Beta Build
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
         with:
@@ -113,7 +114,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sewer56/prs-rs
-          ref: d08599ed5473616f57d57a0966939e1a5dbda9b4
+          ref: 149060527e685360687d7332742ac016b39af8a7
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -134,7 +135,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sewer56/prs-rs
-          ref: d08599ed5473616f57d57a0966939e1a5dbda9b4
+          ref: 149060527e685360687d7332742ac016b39af8a7
       - name: Test Skipping Rust Cache
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
         with:
@@ -148,7 +149,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sewer56/prs-rs
-          ref: d08599ed5473616f57d57a0966939e1a5dbda9b4
+          ref: 149060527e685360687d7332742ac016b39af8a7
       - name: Test Skipping Coverage Upload
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
         with:

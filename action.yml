@@ -77,6 +77,23 @@ runs:
         workspaces: |
           ${{ inputs.rust-project-path }} -> target
 
+    - name: Install gcc-multilib (if on Ubuntu based System, and Target is not Host)
+      if: inputs.use-cross == 'false' && runner.os == 'Linux'
+      shell: bash
+      run: |
+        # Get host triple
+        HOST_TARGET=$(rustc -vV | sed -n 's|host: ||p')
+        echo "Host target: $HOST_TARGET"
+        echo "Target: ${{ inputs.target }}"
+
+        if [ "$HOST_TARGET" != "${{ inputs.target }}" ]; then
+          echo "Target is different from host. Installing gcc-multilib..."
+          sudo apt-get update || true
+          sudo apt-get install -y gcc-multilib || true
+        else
+          echo "Target is the same as host. Skipping gcc-multilib installation."
+        fi
+
     - name: Install cross
       if: inputs.use-cross == 'true'
       shell: bash
@@ -91,16 +108,18 @@ runs:
         cargo +${{ inputs.rust-toolchain }} tarpaulin --all --out xml --engine llvm \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
+          ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
           ${{ inputs.additional-test-args }}
 
     - name: Run Tests with cross
       if: inputs.use-cross == 'true'
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
-      run: |
+      run: |  
         cross +${{ inputs.rust-toolchain }} test --all \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
+          ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
           ${{ inputs.additional-test-args }}
 
     - name: Upload Coverage to Codecov
