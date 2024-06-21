@@ -1,0 +1,108 @@
+name: 'Test Rust Library and Upload Coverage'
+description: 'Runs tests for a Rust library using Tarpaulin and uploads the coverage to Codecov.'
+branding:
+  icon: 'check'
+  color: 'green'
+
+inputs:
+  rust-project-path:
+    description: 'Path to the Rust project'
+    required: false
+    default: '.'
+  rust-toolchain:
+    description: 'Rust toolchain to use for building and testing (e.g., stable, nightly)'
+    required: false
+    default: 'stable'
+  target:
+    description: 'The target platform for the Rust compiler'
+    required: false
+    default: ''
+  install-rust-toolchain:
+    description: 'Whether to install the specified Rust toolchain'
+    required: false
+    default: true
+  setup-rust-cache:
+    description: 'Whether to set up Rust caching'
+    required: false
+    default: true
+  upload-coverage:
+    description: 'Whether to upload coverage to Codecov'
+    required: false
+    default: true
+  codecov-token:
+    description: 'Codecov token for uploading coverage'
+    required: false
+  codecov-flags:
+    description: 'Flags to pass to Codecov'
+    required: false
+    default: 'unittests'
+  codecov-name:
+    description: 'Custom defined name for the upload'
+    required: false
+    default: 'codecov-umbrella'
+  features:
+    description: 'Space-separated list of features to enable during testing'
+    required: false
+    default: ''
+  no-default-features:
+    description: 'Disable default features during testing'
+    required: false
+    default: false
+  use-cross:
+    description: 'Use cross-rs for testing. If false, use cargo.'
+    required: false
+    default: false
+  additional-test-args:
+    description: 'Additional arguments to pass to the cargo test command'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Rust Toolchain
+      if: inputs.install-rust-toolchain == 'true'
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: ${{ inputs.rust-toolchain }}
+        target: ${{ inputs.target }}
+
+    - name: Setup Rust Caching
+      if: inputs.setup-rust-cache == 'true'
+      uses: Swatinem/rust-cache@v2
+      with:
+        key: ${{ inputs.rust-project-path }}
+        cache-on-failure: true
+        workspaces: |
+          ${{ inputs.rust-project-path }} -> target
+
+    - name: Install cross
+      if: inputs.use-cross == 'true'
+      shell: bash
+      run: cargo install cross --git https://github.com/cross-rs/cross
+
+    - name: Run Tarpaulin
+      shell: bash
+      working-directory: ${{ inputs.rust-project-path }}
+      run: |
+        cargo +${{ inputs.rust-toolchain }} install cargo-tarpaulin
+        TEST_CMD="cargo"
+        if [ "${{ inputs.use-cross }}" == "true" ]; then
+          TEST_CMD="cross"
+        fi
+
+        $TEST_CMD +${{ inputs.rust-toolchain }} tarpaulin --all --out xml --engine llvm \
+          --features "${{ inputs.features }}" \
+          ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
+          -- ${{ inputs.additional-test-args }}
+
+    - name: Upload Coverage to Codecov
+      if: inputs.upload-coverage == 'true'
+      uses: codecov/codecov-action@v4
+      with:
+        files: ${{ inputs.rust-project-path }}/cobertura.xml
+        flags: ${{ inputs.codecov-flags }}
+        name: ${{ inputs.codecov-name }}
+        token: ${{ inputs.codecov-token }}
+        fail_ci_if_error: true
+        verbose: true
