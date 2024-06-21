@@ -91,7 +91,7 @@ runs:
         cargo +${{ inputs.rust-toolchain }} tarpaulin --all --out xml --engine llvm \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
-          -- ${{ inputs.additional-test-args }}
+          ${{ inputs.additional-test-args }}
 
     - name: Run Tests with cross
       if: inputs.use-cross == 'true'
@@ -101,7 +101,7 @@ runs:
         cross +${{ inputs.rust-toolchain }} test --all \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
-          -- ${{ inputs.additional-test-args }}
+          ${{ inputs.additional-test-args }}
 
     - name: Upload Coverage to Codecov
       if: inputs.upload-coverage == 'true' && inputs.use-cross == 'false'
