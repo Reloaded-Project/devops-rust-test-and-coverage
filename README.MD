@@ -112,6 +112,15 @@ This workflow runs on every push and performs the following steps:
 
 **Note:** Code coverage is skipped when using `cross` due to incompatibility with Tarpaulin.
 
+### Workflow for Binary Projects
+
+This action is designed for Rust libraries without binary artifacts.
+
+If you're working on a project with binary artifacts, consider using [devops-rust-lightweight-binary][rust-lw-binary],
+instead, which will invoke this action as part of its workflow if tests are enabled.
+
 ## License
 
 This GitHub Action is released under the [MIT License](LICENSE).
+
+[rust-lw-binary]: https://github.com/Reloaded-Project/devops-rust-lightweight-binary
