@@ -72,7 +72,7 @@ runs:
       if: inputs.setup-rust-cache == 'true'
       uses: Swatinem/rust-cache@v2
       with:
-        key: ${{ inputs.rust-project-path }}
+        key: ${{ inputs.rust-project-path }}+${{ inputs.target }}
         cache-on-failure: true
         workspaces: |
           ${{ inputs.rust-project-path }} -> target
