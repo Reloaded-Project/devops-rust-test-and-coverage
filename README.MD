@@ -15,8 +15,8 @@ This GitHub Action allows you to easily run tests for your Rust library and uplo
 ## Features
 
 - 🦀 Test your Rust library using `cargo` or `cross`
-- 📊 Generate coverage reports using Tarpaulin (only when using `cargo`)
-- 📤 Upload coverage results to Codecov (only when using `cargo`)
+- 📊 Optional coverage reports using Tarpaulin (only when using `cargo`)
+- 📤 Upload coverage results to Codecov (only when using `cargo` and Tarpaulin)
 - 🛠️ Customize Rust toolchain and target platform
 - 📦 Enable or disable default features
 - 🔧 Specify additional features to test with
@@ -36,6 +36,7 @@ To use this action in your GitHub workflow, add the following step:
     target: 'x86_64-unknown-linux-gnu'
     install-rust-toolchain: true
     setup-rust-cache: true
+    use-tarpaulin: true
     upload-coverage: true
     codecov-token: ${{ secrets.CODECOV_TOKEN }}
     codecov-flags: 'unittests'
@@ -48,21 +49,22 @@ To use this action in your GitHub workflow, add the following step:
 
 ## Inputs
 
-| Input                    | Description                                                                                 | Required | Default              |
-| ------------------------ | ------------------------------------------------------------------------------------------- | -------- | -------------------- |
-| `rust-project-path`      | Path to the Rust project                                                                    | No       | `'.'`                |
-| `rust-toolchain`         | Rust toolchain to use for building and testing (e.g., stable, nightly)                      | No       | `'stable'`           |
-| `target`                 | The target platform for the Rust compiler                                                   | No       | `''`                 |
-| `install-rust-toolchain` | Whether to install the specified Rust toolchain                                             | No       | `true`               |
-| `setup-rust-cache`       | Whether to set up Rust caching                                                              | No       | `true`               |
-| `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo`)                             | No       | `true`               |
-| `codecov-token`          | Codecov token for uploading coverage                                                        | No       | N/A                  |
-| `codecov-flags`          | Flags to pass to Codecov                                                                    | No       | `'unittests'`        |
-| `codecov-name`           | Custom defined name for the upload                                                          | No       | `'codecov-umbrella'` |
-| `features`               | Space-separated list of features to enable during testing                                   | No       | `''`                 |
-| `no-default-features`    | Disable default features during testing                                                     | No       | `false`              |
-| `use-cross`              | Use cross-rs for testing. If false, use cargo. Code coverage is skipped when using `cross`. | No       | `false`              |
-| `additional-test-args`   | Additional arguments to pass to the cargo test command                                      | No       | `''`                 |
+| Input                    | Description                                                                   | Required | Default              |
+| ------------------------ | ----------------------------------------------------------------------------- | -------- | -------------------- |
+| `rust-project-path`      | Path to the Rust project                                                      | No       | `'.'`                |
+| `rust-toolchain`         | Rust toolchain to use for building and testing (e.g., stable, nightly)        | No       | `'stable'`           |
+| `target`                 | The target platform for the Rust compiler                                     | No       | `''`                 |
+| `install-rust-toolchain` | Whether to install the specified Rust toolchain                               | No       | `true`               |
+| `setup-rust-cache`       | Whether to set up Rust caching                                                | No       | `true`               |
+| `use-tarpaulin`          | Whether to use Tarpaulin for code coverage. If false, only runs tests.        | No       | `true`               |
+| `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin) | No       | `true`               |
+| `codecov-token`          | Codecov token for uploading coverage                                          | No       | N/A                  |
+| `codecov-flags`          | Flags to pass to Codecov                                                      | No       | `'unittests'`        |
+| `codecov-name`           | Custom defined name for the upload                                            | No       | `'codecov-umbrella'` |
+| `features`               | Space-separated list of features to enable during testing                     | No       | `''`                 |
+| `no-default-features`    | Disable default features during testing                                       | No       | `false`              |
+| `use-cross`              | Use cross-rs for testing. If false, use cargo.                                | No       | `false`              |
+| `additional-test-args`   | Additional arguments to pass to the cargo test command                        | No       | `''`                 |
 
 ## Example Workflow
 
@@ -100,16 +102,20 @@ jobs:
           features: 'feature1 feature2'
           no-default-features: true
           use-cross: ${{ matrix.use-cross }}
+          use-tarpaulin: ${{ matrix.use-tarpaulin }}
           target: ${{ matrix.target }}
 ```
 
 This workflow runs on every push and performs the following steps:
 1. Checks out the repository
 2. Runs the tests using `cargo` or `cross` based on the matrix configuration
-3. Generates a coverage report using Tarpaulin (only when using `cargo`)
-4. Uploads the coverage report to Codecov (only when using `cargo`)
+3. Generates a coverage report using Tarpaulin (only when enabled and using `cargo`)
+4. Uploads the coverage report to Codecov (only when Tarpaulin is enabled)
 
-**Note:** Code coverage is skipped when using `cross` due to incompatibility with Tarpaulin.
+**Notes:** 
+- Code coverage is skipped when using `cross`
+- Tarpaulin can be disabled for platforms where it's unsupported
+- When Tarpaulin is disabled, the action will only run tests without generating coverage reports
 
 ### Workflow for Binary Projects
 

@@ -25,6 +25,10 @@ inputs:
     description: 'Whether to set up Rust caching'
     required: false
     default: true
+  use-tarpaulin:
+    description: 'Whether to use Tarpaulin for code coverage. If false, only runs tests.'
+    required: false
+    default: true
   upload-coverage:
     description: 'Whether to upload coverage to Codecov'
     required: false
@@ -100,7 +104,7 @@ runs:
       run: RUSTFLAGS="" cargo install cross --git https://github.com/cross-rs/cross
 
     - name: Run Tarpaulin
-      if: inputs.use-cross == 'false'
+      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true'
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
       run: |
@@ -110,6 +114,17 @@ runs:
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
           ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
           --skip-clean \
+          ${{ inputs.additional-test-args }}
+
+    - name: Run Tests with cargo
+      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'false'
+      shell: bash
+      working-directory: ${{ inputs.rust-project-path }}
+      run: |
+        cargo +${{ inputs.rust-toolchain }} test --all \
+          --features "${{ inputs.features }}" \
+          ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
+          ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
           ${{ inputs.additional-test-args }}
 
     - name: Run Tests with cross
@@ -124,7 +139,7 @@ runs:
           ${{ inputs.additional-test-args }}
 
     - name: Upload Coverage to Codecov
-      if: inputs.upload-coverage == 'true' && inputs.use-cross == 'false'
+      if: inputs.upload-coverage == 'true' && inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true'
       uses: codecov/codecov-action@v4
       with:
         files: ${{ inputs.rust-project-path }}/cobertura.xml
