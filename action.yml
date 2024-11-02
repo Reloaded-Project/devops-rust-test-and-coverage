@@ -97,7 +97,7 @@ runs:
     - name: Install cross
       if: inputs.use-cross == 'true'
       shell: bash
-      run: cargo install cross --git https://github.com/cross-rs/cross
+      run: RUSTFLAGS="" cargo install cross --git https://github.com/cross-rs/cross
 
     - name: Run Tarpaulin
       if: inputs.use-cross == 'false'
