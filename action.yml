@@ -131,8 +131,10 @@ runs:
       if: inputs.use-cross == 'true'
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
+      # the RUSTFLAGS are a hack around cross build errors on certain setups
+      # https://github.com/cross-rs/cross/issues/1561
       run: |  
-        cross +${{ inputs.rust-toolchain }} test --all \
+        RUSTFLAGS="" cross +${{ inputs.rust-toolchain }} test --all \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
           ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
