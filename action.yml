@@ -142,7 +142,7 @@ runs:
 
     - name: Upload Coverage to Codecov
       if: inputs.upload-coverage == 'true' && inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true'
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         files: ${{ inputs.rust-project-path }}/cobertura.xml
         flags: ${{ inputs.codecov-flags }}
