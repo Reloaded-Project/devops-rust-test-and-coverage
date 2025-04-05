@@ -84,6 +84,7 @@ runs:
       with:
         key: test-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}
         cache-on-failure: true
+        cache-all-crates: true
         workspaces: |
           ${{ inputs.rust-project-path }} -> target
 
