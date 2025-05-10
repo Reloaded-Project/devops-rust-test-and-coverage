@@ -98,9 +98,9 @@ runs:
         echo "Target: ${{ inputs.target }}"
 
         if [ "$HOST_TARGET" != "${{ inputs.target }}" ]; then
-          echo "Target is different from host. Installing gcc-multilib..."
+          echo "Target is different from host. Installing gcc-multilib and g++-multilib..."
           sudo apt-get update || true
-          sudo apt-get install -y gcc-multilib || true
+          sudo apt-get install -y gcc-multilib g++-multilib || true
         else
           echo "Target is the same as host. Skipping gcc-multilib installation."
         fi
