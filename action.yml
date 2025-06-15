@@ -64,10 +64,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Extract features for cache in friendly to cache-key manner 
+    - name: Extract features and additional test args for cache in friendly to cache-key manner 
       shell: bash
       run: |
         echo "SAFE_FEATURES=$(echo ${{ inputs.features }} | tr ',' '-' | tr -d ' ')" >> $GITHUB_ENV
+        SAFE_ADDITIONAL_TEST_ARGS=$(echo "${{ inputs.additional-test-args }}" | tr -dc '[:alnum:],_-' | tr ',' '-')
+        if [ -z "$SAFE_ADDITIONAL_TEST_ARGS" ]; then
+          SAFE_ADDITIONAL_TEST_ARGS="no-test-args"
+        fi
+        echo "SAFE_ADDITIONAL_TEST_ARGS=${SAFE_ADDITIONAL_TEST_ARGS}" >> $GITHUB_ENV
 
     - name: Install Rust Toolchain
       if: inputs.install-rust-toolchain == 'true'
@@ -82,7 +87,7 @@ runs:
       if: inputs.setup-rust-cache == 'true'
       uses: Swatinem/rust-cache@v2
       with:
-        key: test-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}
+        key: test-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
         cache-on-failure: true
         cache-all-crates: true
         workspaces: |
