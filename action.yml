@@ -125,7 +125,7 @@ runs:
       run: RUSTFLAGS="" cargo install cross --git https://github.com/cross-rs/cross
 
     - name: Install cargo-binstall
-      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true' && inputs.install-binstall == 'true'
+      if: inputs.install-binstall == 'true'
       uses: cargo-bins/cargo-binstall@main
 
     - name: Install Tarpaulin (via binstall)
