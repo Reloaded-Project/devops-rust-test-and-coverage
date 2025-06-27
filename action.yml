@@ -131,7 +131,7 @@ runs:
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true'
       shell: bash
       run: |
-        cargo binstall cargo-tarpaulin --no-confirm
+        cargo +${{ inputs.rust-toolchain }} binstall cargo-tarpaulin --no-confirm
 
     - name: Install Tarpaulin (via cargo install)
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'false'
