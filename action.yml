@@ -30,11 +30,11 @@ inputs:
     required: false
     default: "true"
   use-binstall:
-    description: 'Whether to use cargo binstall for installing components like tarpaulin. If false, uses cargo install.'
+    description: 'Whether to use cargo-binstall for installing components like tarpaulin. If false, uses cargo install.'
     required: false
     default: "true"
   install-binstall:
-    description: 'Whether to install cargo binstall. If false, assumes it is already available in the environment.'
+    description: 'Whether to install cargo-binstall. If false, assumes it is already available in the environment.'
     required: false
     default: "true"
   upload-coverage:
