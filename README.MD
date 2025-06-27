@@ -158,6 +158,15 @@ you can optimize build times by being selective about certain setup options on s
 
 This can significantly reduce build times when running multiple test configurations in the same job.
 
+### Caching with binstall
+
+The action automatically configures Rust caching based on your settings:
+
+- When `use-binstall` is enabled (default), binary caching (`cache-bin`) is disabled
+  - To prevent conflicts between `cargo-binstall` and the cache
+  - Because it's assumed you'd use `cargo-binstall` for all CI tooling.
+- When `use-binstall` is disabled, binary caching is enabled for normal `cargo install` operations
+
 ### Workflow for Binary Projects
 
 This action is designed for Rust libraries without binary artifacts.

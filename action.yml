@@ -97,6 +97,8 @@ runs:
       with:
         key: test-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
         cache-on-failure: true
+        cache-all-crates: true
+        cache-bin: ${{ inputs.use-binstall == 'true' && 'false' || 'true' }} # Disable binary caching when using binstall to avoid conflicts
         workspaces: |
           ${{ inputs.rust-project-path }} -> target
 
@@ -130,7 +132,10 @@ runs:
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true'
       shell: bash
       run: |
-        cargo +${{ inputs.rust-toolchain }} binstall cargo-tarpaulin --no-confirm
+        # The force here is kinda forced for back compat reasons, else cargo might not pick up the binary;
+        # while binstall thinks it's there due to caching. Current versions wouldn't cache preinstalled cargo-tarpaulin
+        # but they may reside from older CI runs in other repos.
+        cargo +${{ inputs.rust-toolchain }} binstall cargo-tarpaulin --force
 
     - name: Install Tarpaulin (via cargo install)
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'false'
