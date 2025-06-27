@@ -122,6 +122,42 @@ This workflow runs on every push and performs the following steps:
 - Tarpaulin can be disabled for platforms where it's unsupported
 - When Tarpaulin is disabled, the action will only run tests without generating coverage reports
 
+## Performance Tips
+
+### Multiple Action Calls
+
+If you're calling this action multiple times within the same job (e.g., testing different feature combinations),
+you can optimize build times by being selective about certain setup options on subsequent calls:
+
+```yaml
+# First call - full setup
+- name: Run Tests (First Call)
+  uses: Reloaded-Project/devops-rust-test-and-coverage@v1
+  with:
+    setup-rust-cache: true
+    install-rust-toolchain: true
+    install-binstall: true
+    # ... other options
+
+# Subsequent calls - skip redundant setup
+- name: Run Tests with Different Features
+  uses: Reloaded-Project/devops-rust-test-and-coverage@v1
+  with:
+    setup-rust-cache: false      # Cache already set up
+    install-rust-toolchain: false # Toolchain already installed
+    install-binstall: false       # cargo-binstall already available
+    features: 'different-features'
+    # ... other options
+```
+
+**Key optimizations:**
+
+- `setup-rust-cache: false` - Skip cache setup after the first call
+- `install-rust-toolchain: false` - Skip toolchain installation if already installed
+- `install-binstall: false` - Skip cargo-binstall installation if already available
+
+This can significantly reduce build times when running multiple test configurations in the same job.
+
 ### Workflow for Binary Projects
 
 This action is designed for Rust libraries without binary artifacts.
