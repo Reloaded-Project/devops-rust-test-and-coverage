@@ -29,6 +29,14 @@ inputs:
     description: 'Whether to use Tarpaulin for code coverage. If false, only runs tests.'
     required: false
     default: "true"
+  use-binstall:
+    description: 'Whether to use cargo binstall for installing components like tarpaulin. If false, uses cargo install.'
+    required: false
+    default: "true"
+  install-binstall:
+    description: 'Whether to install cargo binstall. If false, assumes it is already available in the environment.'
+    required: false
+    default: "true"
   upload-coverage:
     description: 'Whether to upload coverage to Codecov'
     required: false
@@ -115,12 +123,27 @@ runs:
       shell: bash
       run: RUSTFLAGS="" cargo install cross --git https://github.com/cross-rs/cross
 
+    - name: Install cargo-binstall
+      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true' && inputs.install-binstall == 'true'
+      uses: cargo-bins/cargo-binstall@main
+
+    - name: Install Tarpaulin (via binstall)
+      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true'
+      shell: bash
+      run: |
+        cargo binstall cargo-tarpaulin --no-confirm
+
+    - name: Install Tarpaulin (via cargo install)
+      if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'false'
+      shell: bash
+      run: |
+        cargo +${{ inputs.rust-toolchain }} install cargo-tarpaulin
+
     - name: Run Tarpaulin
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true'
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
       run: |
-        cargo +${{ inputs.rust-toolchain }} install cargo-tarpaulin
         cargo +${{ inputs.rust-toolchain }} tarpaulin --all --out xml --engine llvm \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
