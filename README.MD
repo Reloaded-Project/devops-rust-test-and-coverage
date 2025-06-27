@@ -16,6 +16,7 @@ This GitHub Action allows you to easily run tests for your Rust library and uplo
 
 - 🦀 Test your Rust library using `cargo` or `cross`
 - 📊 Optional coverage reports using Tarpaulin (only when using `cargo`)
+- ⚡ Fast Tarpaulin installation via `cargo binstall`
 - 📤 Upload coverage results to Codecov (only when using `cargo` and Tarpaulin)
 - 🛠️ Customize Rust toolchain and target platform
 - 📦 Enable or disable default features
@@ -37,6 +38,8 @@ To use this action in your GitHub workflow, add the following step:
     install-rust-toolchain: true
     setup-rust-cache: true
     use-tarpaulin: true
+    use-binstall: true
+    install-binstall: true
     upload-coverage: true
     codecov-token: ${{ secrets.CODECOV_TOKEN }}
     codecov-flags: 'unittests'
@@ -57,6 +60,8 @@ To use this action in your GitHub workflow, add the following step:
 | `install-rust-toolchain` | Whether to install the specified Rust toolchain                               | No       | `true`               |
 | `setup-rust-cache`       | Whether to set up Rust caching                                                | No       | `true`               |
 | `use-tarpaulin`          | Whether to use Tarpaulin for code coverage. If false, only runs tests.        | No       | `true`               |
+| `use-binstall`           | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.       | No       | `true`               |
+| `install-binstall`       | Installs `cargo-binstall`. If false, assumes it is already available.         | No       | `true`               |
 | `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin) | No       | `true`               |
 | `codecov-token`          | Codecov token for uploading coverage                                          | No       | N/A                  |
 | `codecov-flags`          | Flags to pass to Codecov                                                      | No       | `'unittests'`        |
