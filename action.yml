@@ -95,7 +95,7 @@ runs:
       if: inputs.setup-rust-cache == 'true'
       uses: Swatinem/rust-cache@v2
       with:
-        key: test-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
+        key: test-${{ inputs.rust-toolchain }}-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
         cache-on-failure: true
         cache-all-crates: true
         cache-bin: ${{ inputs.use-binstall == 'true' && 'false' || 'true' }} # Disable binary caching when using binstall to avoid conflicts
