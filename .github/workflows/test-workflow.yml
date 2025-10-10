@@ -75,10 +75,7 @@ jobs:
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
-  test-nightly-beta-build:
-    strategy:
-      matrix:
-        rust-toolchain: [nightly, beta]
+  test-nightly:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Test Repository
@@ -86,10 +83,61 @@ jobs:
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
-      - name: Test Nightly/Beta Build
+      - name: Test Nightly Build
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
         with:
-          rust-toolchain: ${{ matrix.rust-toolchain }}
+          rust-toolchain: nightly
+          target: x86_64-unknown-linux-gnu
+          features: 'c-exports,std'
+          no-default-features: true
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-beta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Sewer56/prs-rs
+          ref: 149060527e685360687d7332742ac016b39af8a7
+      - name: Test Beta Build
+        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        with:
+          rust-toolchain: beta
+          target: x86_64-unknown-linux-gnu
+          features: 'c-exports,std'
+          no-default-features: true
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-specific-nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Sewer56/prs-rs
+          ref: 149060527e685360687d7332742ac016b39af8a7
+      - name: Test Specific Nightly Release
+        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        with:
+          rust-toolchain: nightly-2025-09-18
+          target: x86_64-unknown-linux-gnu
+          features: 'c-exports,std'
+          no-default-features: true
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-specific-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Test Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Sewer56/prs-rs
+          ref: 149060527e685360687d7332742ac016b39af8a7
+      - name: Test Specific Version
+        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        with:
+          rust-toolchain: 1.90.0
           target: x86_64-unknown-linux-gnu
           features: 'c-exports,std'
           no-default-features: true

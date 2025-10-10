@@ -52,24 +52,24 @@ To use this action in your GitHub workflow, add the following step:
 
 ## Inputs
 
-| Input                    | Description                                                                   | Required | Default              |
-| ------------------------ | ----------------------------------------------------------------------------- | -------- | -------------------- |
-| `rust-project-path`      | Path to the Rust project                                                      | No       | `'.'`                |
-| `rust-toolchain`         | Rust toolchain to use for building and testing (e.g., stable, nightly)        | No       | `'stable'`           |
-| `target`                 | The target platform for the Rust compiler                                     | No       | `''`                 |
-| `install-rust-toolchain` | Whether to install the specified Rust toolchain                               | No       | `true`               |
-| `setup-rust-cache`       | Whether to set up Rust caching                                                | No       | `true`               |
-| `use-tarpaulin`          | Whether to use Tarpaulin for code coverage. If false, only runs tests.        | No       | `true`               |
-| `use-binstall`           | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.       | No       | `true`               |
-| `install-binstall`       | Installs `cargo-binstall`. If false, assumes it is already available.         | No       | `true`               |
-| `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin) | No       | `true`               |
-| `codecov-token`          | Codecov token for uploading coverage                                          | No       | N/A                  |
-| `codecov-flags`          | Flags to pass to Codecov                                                      | No       | `'unittests'`        |
-| `codecov-name`           | Custom defined name for the upload                                            | No       | `'codecov-umbrella'` |
-| `features`               | Space-separated list of features to enable during testing                     | No       | `''`                 |
-| `no-default-features`    | Disable default features during testing                                       | No       | `false`              |
-| `use-cross`              | Use cross-rs for testing. If false, use cargo.                                | No       | `false`              |
-| `additional-test-args`   | Additional arguments to pass to the cargo test command                        | No       | `''`                 |
+| Input                    | Description                                                                                        | Required | Default              |
+| ------------------------ | -------------------------------------------------------------------------------------------------- | -------- | -------------------- |
+| `rust-project-path`      | Path to the Rust project                                                                           | No       | `'.'`                |
+| `rust-toolchain`         | Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08) | No       | `'stable'`           |
+| `target`                 | The target platform for the Rust compiler                                                          | No       | `''`                 |
+| `install-rust-toolchain` | Whether to install the specified Rust toolchain                                                    | No       | `true`               |
+| `setup-rust-cache`       | Whether to set up Rust caching                                                                     | No       | `true`               |
+| `use-tarpaulin`          | Whether to use Tarpaulin for code coverage. If false, only runs tests.                             | No       | `true`               |
+| `use-binstall`           | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.                            | No       | `true`               |
+| `install-binstall`       | Installs `cargo-binstall`. If false, assumes it is already available.                              | No       | `true`               |
+| `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin)                      | No       | `true`               |
+| `codecov-token`          | Codecov token for uploading coverage                                                               | No       | N/A                  |
+| `codecov-flags`          | Flags to pass to Codecov                                                                           | No       | `'unittests'`        |
+| `codecov-name`           | Custom defined name for the upload                                                                 | No       | `'codecov-umbrella'` |
+| `features`               | Space-separated list of features to enable during testing                                          | No       | `''`                 |
+| `no-default-features`    | Disable default features during testing                                                            | No       | `false`              |
+| `use-cross`              | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
+| `additional-test-args`   | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |
 
 ## Example Workflow
 
@@ -173,6 +173,27 @@ This action is designed for Rust libraries without binary artifacts.
 
 If you're working on a project with binary artifacts, consider using [devops-rust-lightweight-binary][rust-lw-binary],
 instead, which will invoke this action as part of its workflow if tests are enabled.
+
+### Rust Toolchain Examples
+
+You can specify various Rust toolchain versions:
+
+```yaml
+# Use stable channel
+rust-toolchain: 'stable'
+
+# Use nightly channel
+rust-toolchain: 'nightly'
+
+# Use specific version
+rust-toolchain: '1.75.0'
+
+# Use specific nightly date
+rust-toolchain: 'nightly-2024-02-08'
+
+# Use beta channel
+rust-toolchain: 'beta'
+```
 
 ## License
 

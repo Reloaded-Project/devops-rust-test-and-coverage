@@ -10,7 +10,7 @@ inputs:
     required: false
     default: '.'
   rust-toolchain:
-    description: 'Rust toolchain to use for building and testing (e.g., stable, nightly)'
+    description: 'Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08)'
     required: false
     default: 'stable'
   target:
