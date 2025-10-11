@@ -2,20 +2,20 @@ name: Test Build Workflow
 
 on:
   schedule:
-    - cron: '0 4 * * *' # Run daily at 4am
+    - cron: "0 4 * * *" # Run daily at 4am
   workflow_dispatch:
   push:
     tags:
-      - 'v1'
-      - 'v1-test'
+      - "v1"
+      - "v1-test"
     paths:
-      - 'action.yml'
-      - '.github/workflows/test-build-workflow.yml'
+      - "action.yml"
+      - ".github/workflows/test-build-workflow.yml"
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'action.yml'
-      - '.github/workflows/test-build-workflow.yml'
+      - "action.yml"
+      - ".github/workflows/test-build-workflow.yml"
 
 jobs:
   test-coverage-build:
@@ -44,20 +44,20 @@ jobs:
           # - os: windows-latest
           #   target: aarch64-pc-windows-msvc
           #   use-cross: false
-          - os: macos-13 # Intel
+          - os: macos-15-intel # Intel
             target: x86_64-apple-darwin
             use-cross: false
-          - os: macos-14 # M1/M2 (aarch64)
+          - os: macos-latest # M1/M2 (aarch64)
             target: aarch64-apple-darwin
             use-cross: false
           - os: ubuntu-latest
             target: x86_64-pc-windows-gnu
             use-cross: true
-            label: '[Wine] x86_64-pc-windows-gnu'
+            label: "[Wine] x86_64-pc-windows-gnu"
           - os: ubuntu-latest
             target: i686-pc-windows-gnu
             use-cross: true
-            label: '[Wine] i686-pc-windows-gnu'
+            label: "[Wine] i686-pc-windows-gnu"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Test Repository
@@ -71,7 +71,7 @@ jobs:
           rust-toolchain: stable
           target: ${{ matrix.target }}
           use-cross: ${{ matrix.use-cross }}
-          features: 'c-exports,std'
+          features: "c-exports,std"
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -88,7 +88,7 @@ jobs:
         with:
           rust-toolchain: nightly
           target: x86_64-unknown-linux-gnu
-          features: 'c-exports,std'
+          features: "c-exports,std"
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -105,7 +105,7 @@ jobs:
         with:
           rust-toolchain: beta
           target: x86_64-unknown-linux-gnu
-          features: 'c-exports,std'
+          features: "c-exports,std"
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -122,7 +122,7 @@ jobs:
         with:
           rust-toolchain: nightly-2025-09-18
           target: x86_64-unknown-linux-gnu
-          features: 'c-exports,std'
+          features: "c-exports,std"
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -139,7 +139,7 @@ jobs:
         with:
           rust-toolchain: 1.90.0
           target: x86_64-unknown-linux-gnu
-          features: 'c-exports,std'
+          features: "c-exports,std"
           no-default-features: true
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -153,7 +153,7 @@ jobs:
           - os: windows-latest
             rust-toolchain: stable
             target: x86_64-pc-windows-msvc
-          - os: macos-13 # Intel
+          - os: macos-15-intel # Intel
             rust-toolchain: stable
             target: x86_64-apple-darwin
     runs-on: ${{ matrix.os }}
