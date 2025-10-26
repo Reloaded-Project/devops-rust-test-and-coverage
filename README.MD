@@ -48,28 +48,30 @@ To use this action in your GitHub workflow, add the following step:
     no-default-features: false
     use-cross: false
     additional-test-args: '--ignored --test-threads=1'
+    additional-tarpaulin-args: '--exclude-files "*/tests/*"'
 ```
 
 ## Inputs
 
-| Input                    | Description                                                                                        | Required | Default              |
-| ------------------------ | -------------------------------------------------------------------------------------------------- | -------- | -------------------- |
-| `rust-project-path`      | Path to the Rust project                                                                           | No       | `'.'`                |
-| `rust-toolchain`         | Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08) | No       | `'stable'`           |
-| `target`                 | The target platform for the Rust compiler                                                          | No       | `''`                 |
-| `install-rust-toolchain` | Whether to install the specified Rust toolchain                                                    | No       | `true`               |
-| `setup-rust-cache`       | Whether to set up Rust caching                                                                     | No       | `true`               |
-| `use-tarpaulin`          | Whether to use Tarpaulin for code coverage. If false, only runs tests.                             | No       | `true`               |
-| `use-binstall`           | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.                            | No       | `true`               |
-| `install-binstall`       | Installs `cargo-binstall`. If false, assumes it is already available.                              | No       | `true`               |
-| `upload-coverage`        | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin)                      | No       | `true`               |
-| `codecov-token`          | Codecov token for uploading coverage                                                               | No       | N/A                  |
-| `codecov-flags`          | Flags to pass to Codecov                                                                           | No       | `'unittests'`        |
-| `codecov-name`           | Custom defined name for the upload                                                                 | No       | `'codecov-umbrella'` |
-| `features`               | Space-separated list of features to enable during testing                                          | No       | `''`                 |
-| `no-default-features`    | Disable default features during testing                                                            | No       | `false`              |
-| `use-cross`              | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
-| `additional-test-args`   | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |
+| Input                       | Description                                                                                        | Required | Default              |
+| --------------------------- | -------------------------------------------------------------------------------------------------- | -------- | -------------------- |
+| `rust-project-path`         | Path to the Rust project                                                                           | No       | `'.'`                |
+| `rust-toolchain`            | Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08) | No       | `'stable'`           |
+| `target`                    | The target platform for the Rust compiler                                                          | No       | `''`                 |
+| `install-rust-toolchain`    | Whether to install the specified Rust toolchain                                                    | No       | `true`               |
+| `setup-rust-cache`          | Whether to set up Rust caching                                                                     | No       | `true`               |
+| `use-tarpaulin`             | Whether to use Tarpaulin for code coverage. If false, only runs tests.                             | No       | `true`               |
+| `use-binstall`              | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.                            | No       | `true`               |
+| `install-binstall`          | Installs `cargo-binstall`. If false, assumes it is already available.                              | No       | `true`               |
+| `upload-coverage`           | Whether to upload coverage to Codecov (only when using `cargo` and Tarpaulin)                      | No       | `true`               |
+| `codecov-token`             | Codecov token for uploading coverage                                                               | No       | N/A                  |
+| `codecov-flags`             | Flags to pass to Codecov                                                                           | No       | `'unittests'`        |
+| `codecov-name`              | Custom defined name for the upload                                                                 | No       | `'codecov-umbrella'` |
+| `features`                  | Space-separated list of features to enable during testing                                          | No       | `''`                 |
+| `no-default-features`       | Disable default features during testing                                                            | No       | `false`              |
+| `use-cross`                 | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
+| `additional-test-args`      | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |
+| `additional-tarpaulin-args` | Additional arguments to pass to the cargo tarpaulin command                                        | No       | `''`                 |
 
 ## Example Workflow
 
