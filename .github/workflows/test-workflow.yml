@@ -8,7 +8,7 @@ on:
     branches: [v1-master]
     paths:
       - "action.yml"
-      - ".github/workflows/test-build-workflow.yml"
+      - ".github/workflows/test-workflow.yml"
 
 jobs:
   test-coverage-build:
