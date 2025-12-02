@@ -4,15 +4,8 @@ on:
   schedule:
     - cron: "0 4 * * *" # Run daily at 4am
   workflow_dispatch:
-  push:
-    tags:
-      - "v1"
-      - "v1-test"
-    paths:
-      - "action.yml"
-      - ".github/workflows/test-build-workflow.yml"
   pull_request:
-    branches: [master]
+    branches: [v1-master]
     paths:
       - "action.yml"
       - ".github/workflows/test-build-workflow.yml"
@@ -60,14 +53,18 @@ jobs:
             label: "[Wine] i686-pc-windows-gnu"
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Coverage Build
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: stable
           target: ${{ matrix.target }}
           use-cross: ${{ matrix.use-cross }}
@@ -78,14 +75,18 @@ jobs:
   test-nightly:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Nightly Build
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: nightly
           target: x86_64-unknown-linux-gnu
           features: "c-exports,std"
@@ -95,14 +96,18 @@ jobs:
   test-beta:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Beta Build
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: beta
           target: x86_64-unknown-linux-gnu
           features: "c-exports,std"
@@ -112,14 +117,18 @@ jobs:
   test-specific-nightly:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Specific Nightly Release
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: nightly-2025-09-18
           target: x86_64-unknown-linux-gnu
           features: "c-exports,std"
@@ -129,14 +138,18 @@ jobs:
   test-specific-version:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Specific Version
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: 1.90.0
           target: x86_64-unknown-linux-gnu
           features: "c-exports,std"
@@ -158,19 +171,23 @@ jobs:
             target: x86_64-apple-darwin
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust-toolchain }}
           target: ${{ matrix.target }}
       - name: Test Skipping Rust Install
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           rust-toolchain: ${{ matrix.rust-toolchain }}
           target: ${{ matrix.target }}
           install-rust-toolchain: false
@@ -179,27 +196,35 @@ jobs:
   test-skipping-rust-cache:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Skipping Rust Cache
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           setup-rust-cache: false
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
   test-skipping-coverage-upload:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
       - name: Checkout Test Repository
         uses: actions/checkout@v6
         with:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
+          path: test-project
       - name: Test Skipping Coverage Upload
-        uses: Reloaded-Project/devops-rust-test-and-coverage@v1-test
+        uses: ./
         with:
+          rust-project-path: test-project
           upload-coverage: false
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
