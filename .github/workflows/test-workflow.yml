@@ -61,6 +61,9 @@ jobs:
           repository: Sewer56/prs-rs
           ref: 149060527e685360687d7332742ac016b39af8a7
           path: test-project
+      - name: Remove test project rust-toolchain override
+        shell: bash
+        run: rm -f test-project/rust-toolchain.toml test-project/rust-toolchain
       - name: Test Coverage Build
         uses: ./
         with:
