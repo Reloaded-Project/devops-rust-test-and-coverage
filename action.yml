@@ -93,6 +93,7 @@ runs:
         toolchain: ${{ inputs.rust-toolchain }}
         target: ${{ inputs.target }}
         cache: false
+        components: "clippy,rustfmt"
 
     # Needs to be done after installing toolchain, don't move!
     - name: Setup Rust Caching
