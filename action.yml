@@ -1,82 +1,82 @@
-name: 'Test Rust Library and Upload Coverage'
-description: 'Runs tests for a Rust library using Tarpaulin and uploads the coverage to Codecov.'
+name: "Test Rust Library and Upload Coverage"
+description: "Runs tests for a Rust library using Tarpaulin and uploads the coverage to Codecov."
 branding:
-  icon: 'check'
-  color: 'green'
+  icon: "check"
+  color: "green"
 
 inputs:
   rust-project-path:
-    description: 'Path to the Rust project'
+    description: "Path to the Rust project"
     required: false
-    default: '.'
+    default: "."
   rust-toolchain:
-    description: 'Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08)'
+    description: "Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08)"
     required: false
-    default: 'stable'
+    default: "stable"
   target:
-    description: 'The target platform for the Rust compiler'
+    description: "The target platform for the Rust compiler"
     required: false
-    default: ''
+    default: ""
   install-rust-toolchain:
-    description: 'Whether to install the specified Rust toolchain'
+    description: "Whether to install the specified Rust toolchain"
     required: false
     default: "true"
   setup-rust-cache:
-    description: 'Whether to set up Rust caching'
+    description: "Whether to set up Rust caching"
     required: false
     default: "true"
   use-tarpaulin:
-    description: 'Whether to use Tarpaulin for code coverage. If false, only runs tests.'
+    description: "Whether to use Tarpaulin for code coverage. If false, only runs tests."
     required: false
     default: "true"
   use-binstall:
-    description: 'Whether to use cargo-binstall for installing components like tarpaulin. If false, uses cargo install.'
+    description: "Whether to use cargo-binstall for installing components like tarpaulin. If false, uses cargo install."
     required: false
     default: "true"
   install-binstall:
-    description: 'Whether to install cargo-binstall. If false, assumes it is already available in the environment.'
+    description: "Whether to install cargo-binstall. If false, assumes it is already available in the environment."
     required: false
     default: "true"
   upload-coverage:
-    description: 'Whether to upload coverage to Codecov'
+    description: "Whether to upload coverage to Codecov"
     required: false
     default: "true"
   codecov-token:
-    description: 'Codecov token for uploading coverage'
+    description: "Codecov token for uploading coverage"
     required: false
   codecov-flags:
-    description: 'Flags to pass to Codecov'
+    description: "Flags to pass to Codecov"
     required: false
-    default: 'unittests'
+    default: "unittests"
   codecov-name:
-    description: 'Custom defined name for the upload'
+    description: "Custom defined name for the upload"
     required: false
-    default: 'codecov-umbrella'
+    default: "codecov-umbrella"
   features:
-    description: 'Space-separated list of features to enable during testing'
+    description: "Space-separated list of features to enable during testing"
     required: false
-    default: ''
+    default: ""
   no-default-features:
-    description: 'Disable default features during testing'
+    description: "Disable default features during testing"
     required: false
     default: "false"
   use-cross:
-    description: 'Use cross-rs for testing. If false, use cargo.'
+    description: "Use cross-rs for testing. If false, use cargo."
     required: false
     default: "false"
   additional-test-args:
-    description: 'Additional arguments to pass to the cargo test command'
+    description: "Additional arguments to pass to the cargo test command"
     required: false
-    default: ''
+    default: ""
   additional-tarpaulin-args:
-    description: 'Additional arguments to pass to the cargo tarpaulin command'
+    description: "Additional arguments to pass to the cargo tarpaulin command"
     required: false
-    default: ''
+    default: ""
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: Extract features and additional test args for cache in friendly to cache-key manner 
+    - name: Extract features and additional test args for cache in friendly to cache-key manner
       shell: bash
       run: |
         echo "SAFE_FEATURES=$(echo ${{ inputs.features }} | tr ',' '-' | tr -d ' ')" >> $GITHUB_ENV
@@ -100,7 +100,9 @@ runs:
       if: inputs.setup-rust-cache == 'true'
       uses: Swatinem/rust-cache@v2
       with:
-        key: test-${{ inputs.rust-toolchain }}-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
+        key:
+          test-${{ inputs.rust-toolchain }}-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES
+          }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
         cache-on-failure: true
         cache-all-crates: true
         cache-bin: ${{ inputs.use-binstall == 'true' && 'false' || 'true' }} # Disable binary caching when using binstall to avoid conflicts
@@ -178,7 +180,7 @@ runs:
       working-directory: ${{ inputs.rust-project-path }}
       # the RUSTFLAGS are a hack around cross build errors on certain setups
       # https://github.com/cross-rs/cross/issues/1561
-      run: |  
+      run: |
         RUSTFLAGS="" cross +${{ inputs.rust-toolchain }} test --all \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
