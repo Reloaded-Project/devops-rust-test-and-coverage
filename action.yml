@@ -72,6 +72,10 @@ inputs:
     description: "Additional arguments to pass to the cargo tarpaulin command"
     required: false
     default: ""
+  pre-test-command:
+    description: "Bash command to run before executing tests"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -149,6 +153,11 @@ runs:
       shell: bash
       run: |
         cargo +${{ inputs.rust-toolchain }} install cargo-tarpaulin
+
+    - name: Run Pre-Test Command
+      if: inputs.pre-test-command != ''
+      shell: bash
+      run: ${{ inputs.pre-test-command }}
 
     - name: Run Tarpaulin
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true'

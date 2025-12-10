@@ -23,6 +23,7 @@ This GitHub Action allows you to easily run tests for your Rust library and uplo
 - 🔧 Specify additional features to test with
 - 💾 Optional Rust toolchain caching for faster builds
 - 🎛️ Pass additional arguments to the `cargo test` command
+- 🚀 Run custom commands before test execution
 
 ## Usage
 
@@ -49,6 +50,7 @@ To use this action in your GitHub workflow, add the following step:
     use-cross: false
     additional-test-args: '--ignored --test-threads=1'
     additional-tarpaulin-args: '--exclude-files "*/tests/*"'
+    pre-test-command: 'echo "Running pre-test setup"'
 ```
 
 ## Inputs
@@ -72,6 +74,7 @@ To use this action in your GitHub workflow, add the following step:
 | `use-cross`                 | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
 | `additional-test-args`      | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |
 | `additional-tarpaulin-args` | Additional arguments to pass to the cargo tarpaulin command                                        | No       | `''`                 |
+| `pre-test-command`          | Bash command to run before executing tests                                                         | No       | `''`                 |
 
 ## Example Workflow
 
