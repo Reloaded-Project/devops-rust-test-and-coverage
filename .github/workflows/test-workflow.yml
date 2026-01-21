@@ -43,14 +43,6 @@ jobs:
           - os: macos-latest # M1/M2 (aarch64)
             target: aarch64-apple-darwin
             use-cross: false
-          - os: ubuntu-latest
-            target: x86_64-pc-windows-gnu
-            use-cross: true
-            label: "[Wine] x86_64-pc-windows-gnu"
-          - os: ubuntu-latest
-            target: i686-pc-windows-gnu
-            use-cross: true
-            label: "[Wine] i686-pc-windows-gnu"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Action Repository
