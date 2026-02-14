@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+  "package-a",
+  "package-b",
+  "package-c",
+]
+
+# If the action accidentally drops `--all`, this makes the default behavior
+# run only package-a. Our CI checks rely on this to detect regressions.
+default-members = [
+  "package-a",
+]
