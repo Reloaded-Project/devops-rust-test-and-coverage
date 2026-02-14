@@ -46,6 +46,9 @@ To use this action in your GitHub workflow, add the following step:
     codecov-flags: 'unittests'
     codecov-name: 'codecov-umbrella'
     features: 'feature1 feature2'
+    packages: |
+      package-a
+      package-b
     no-default-features: false
     use-cross: false
     additional-test-args: '--ignored --test-threads=1'
@@ -70,6 +73,7 @@ To use this action in your GitHub workflow, add the following step:
 | `codecov-flags`             | Flags to pass to Codecov                                                                           | No       | `'unittests'`        |
 | `codecov-name`              | Custom defined name for the upload                                                                 | No       | `'codecov-umbrella'` |
 | `features`                  | Space-separated list of features to enable during testing                                          | No       | `''`                 |
+| `packages`                  | Multi-line list of package names to test (one per line). If empty, tests all packages in workspace | No       | `''`                 |
 | `no-default-features`       | Disable default features during testing                                                            | No       | `false`              |
 | `use-cross`                 | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
 | `additional-test-args`      | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |

@@ -1,0 +1,113 @@
+name: Test Packages Input
+
+# This workflow is a black-box integration test for the action's `packages` input.
+#
+# The fixture workspace contains three crates (package-a/package-b/package-c). Each crate writes a
+# marker file (marker-package-*) when its tests run. We assert marker presence/absence to prove
+# that:
+# - when `packages` is empty, the action runs the whole workspace (`--all`)
+# - when `packages` is provided, the action uses `-p <pkg>` and only runs those packages
+#
+# The fixture workspace also sets `default-members = ["package-a"]` to catch regressions where
+# the action accidentally stops passing `--all` for the default (empty packages) case.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [v1-master]
+    paths:
+      - "action.yml"
+      - "README.MD"
+      - ".github/workflows/test-packages-input.yml"
+      - "tests/fixtures/packages-input-workspace/**"
+
+jobs:
+  packages-input:
+    name: Packages Input - ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: cargo empty (default all)
+            target: x86_64-unknown-linux-gnu
+            use_cross: false
+            use_tarpaulin: false
+            packages: ""
+            expect: "marker-package-a marker-package-b marker-package-c"
+            forbid: ""
+
+          - name: cargo single
+            target: x86_64-unknown-linux-gnu
+            use_cross: false
+            use_tarpaulin: false
+            packages: |
+              package-b
+            expect: "marker-package-b"
+            forbid: "marker-package-a marker-package-c"
+
+          - name: cargo multiple
+            target: x86_64-unknown-linux-gnu
+            use_cross: false
+            use_tarpaulin: false
+            packages: |
+              package-a
+              package-c
+            expect: "marker-package-a marker-package-c"
+            forbid: "marker-package-b"
+
+          - name: cross multiple
+            target: aarch64-unknown-linux-gnu
+            use_cross: true
+            use_tarpaulin: false
+            packages: |
+              package-a
+              package-c
+            expect: "marker-package-a marker-package-c"
+            forbid: "marker-package-b"
+
+          - name: tarpaulin single
+            target: x86_64-unknown-linux-gnu
+            use_cross: false
+            use_tarpaulin: true
+            packages: |
+              package-b
+            expect: "marker-package-b"
+            forbid: "marker-package-a marker-package-c"
+
+    steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
+
+      - name: Clean package markers
+        shell: bash
+        run: rm -f tests/fixtures/packages-input-workspace/marker-package-*
+
+      - name: Run action
+        uses: ./
+        with:
+          rust-project-path: tests/fixtures/packages-input-workspace
+          rust-toolchain: stable
+          target: ${{ matrix.target }}
+          use-cross: ${{ matrix.use_cross }}
+          use-tarpaulin: ${{ matrix.use_tarpaulin }}
+          upload-coverage: false
+          packages: ${{ matrix.packages }}
+
+      - name: Assert markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="tests/fixtures/packages-input-workspace"
+          expect="${{ matrix.expect }}"
+          forbid="${{ matrix.forbid }}"
+
+          for f in $expect; do
+            test -f "$root/$f" || { echo "Missing marker: $f"; exit 1; }
+          done
+
+          if [ -n "$forbid" ]; then
+            for f in $forbid; do
+              test ! -f "$root/$f" || { echo "Unexpected marker: $f"; exit 1; }
+            done
+          fi

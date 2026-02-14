@@ -77,6 +77,11 @@ inputs:
     required: false
     default: ""
 
+  packages:
+    description: "Multi-line list of package names to test (one per line). If empty, tests all packages in workspace (--all)"
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -89,6 +94,27 @@ runs:
           SAFE_ADDITIONAL_TEST_ARGS="no-test-args"
         fi
         echo "SAFE_ADDITIONAL_TEST_ARGS=${SAFE_ADDITIONAL_TEST_ARGS}" >> $GITHUB_ENV
+
+        # Process packages input - convert multiline to space-separated, clean whitespace
+        SAFE_PACKAGES=$(echo "${{ inputs.packages }}" | tr -d '\r' | tr '\n\t' '  ' | tr -s ' ' | sed 's/^ *//;s/ *$//')
+        echo "SAFE_PACKAGES=${SAFE_PACKAGES}" >> $GITHUB_ENV
+
+        # Build packages argument once and reuse across steps
+        if [ -n "$SAFE_PACKAGES" ]; then
+          PACKAGES_ARG=""
+          for pkg in $SAFE_PACKAGES; do
+            if [ -n "$pkg" ]; then
+              if [ -z "$PACKAGES_ARG" ]; then
+                PACKAGES_ARG="-p $pkg"
+              else
+                PACKAGES_ARG="$PACKAGES_ARG -p $pkg"
+              fi
+            fi
+          done
+        else
+          PACKAGES_ARG="--all"
+        fi
+        echo "PACKAGES_ARG=${PACKAGES_ARG}" >> $GITHUB_ENV
 
     - name: Install Rust Toolchain
       if: inputs.install-rust-toolchain == 'true'
@@ -164,7 +190,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
       run: |
-        cargo +${{ inputs.rust-toolchain }} tarpaulin --all --out xml --engine llvm \
+        cargo +${{ inputs.rust-toolchain }} tarpaulin $PACKAGES_ARG --out xml --engine llvm \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
           ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
@@ -177,7 +203,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.rust-project-path }}
       run: |
-        cargo +${{ inputs.rust-toolchain }} test --all \
+        cargo +${{ inputs.rust-toolchain }} test $PACKAGES_ARG \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
           ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
@@ -190,7 +216,7 @@ runs:
       # the RUSTFLAGS are a hack around cross build errors on certain setups
       # https://github.com/cross-rs/cross/issues/1561
       run: |
-        RUSTFLAGS="" cross +${{ inputs.rust-toolchain }} test --all \
+        RUSTFLAGS="" cross +${{ inputs.rust-toolchain }} test $PACKAGES_ARG \
           --features "${{ inputs.features }}" \
           ${{ inputs.no-default-features == 'true' && '--no-default-features' || '' }} \
           ${{ inputs.target != '' && format('--target "{0}"', inputs.target) || '' }} \
