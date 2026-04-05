@@ -24,6 +24,7 @@ This GitHub Action allows you to easily run tests for your Rust library and uplo
 - 💾 Optional Rust toolchain caching for faster builds
 - 🎛️ Pass additional arguments to the `cargo test` command
 - 🚀 Run custom commands before test execution
+- 🏗️ Full cargo workspace support - test all packages or a specific subset
 
 ## Usage
 
@@ -60,7 +61,7 @@ To use this action in your GitHub workflow, add the following step:
 
 | Input                       | Description                                                                                        | Required | Default              |
 | --------------------------- | -------------------------------------------------------------------------------------------------- | -------- | -------------------- |
-| `rust-project-path`         | Path to the Rust project                                                                           | No       | `'.'`                |
+| `rust-project-path`         | Directory containing `Cargo.toml` (crate root or workspace root)                                   | No       | `'.'`                |
 | `rust-toolchain`            | Rust toolchain to use for building and testing (e.g., stable, nightly, 1.75.0, nightly-2024-02-08) | No       | `'stable'`           |
 | `target`                    | The target platform for the Rust compiler                                                          | No       | `''`                 |
 | `install-rust-toolchain`    | Whether to install the specified Rust toolchain                                                    | No       | `true`               |
@@ -73,16 +74,49 @@ To use this action in your GitHub workflow, add the following step:
 | `codecov-flags`             | Flags to pass to Codecov                                                                           | No       | `'unittests'`        |
 | `codecov-name`              | Custom defined name for the upload                                                                 | No       | `'codecov-umbrella'` |
 | `features`                  | Space-separated list of features to enable during testing                                          | No       | `''`                 |
-| `packages`                  | Multi-line list of package names to test (one per line). If empty, tests all packages in workspace | No       | `''`                 |
+| `packages`                  | Packages to test (one per line). Empty tests all workspace members.                                | No       | `''`                 |
 | `no-default-features`       | Disable default features during testing                                                            | No       | `false`              |
 | `use-cross`                 | Use cross-rs for testing. If false, use cargo.                                                     | No       | `false`              |
 | `additional-test-args`      | Additional arguments to pass to the cargo test command                                             | No       | `''`                 |
 | `additional-tarpaulin-args` | Additional arguments to pass to the cargo tarpaulin command                                        | No       | `''`                 |
 | `pre-test-command`          | Bash command to run before executing tests                                                         | No       | `''`                 |
 
-## Example Workflow
+> **Note:** `rust-project-path` is a **directory** (not a file).
+> It should point to the folder containing `Cargo.toml`:
+>
+> - **Single crate** - the crate root (e.g. `'.'`)
+> - **Workspace** - the workspace root
+>
+> Defaults to `'.'` (current directory).
 
-Here's an example workflow that uses this action with a matrix of configurations:
+## Example Workflows
+
+### Testing Specific Packages
+
+Use `packages` to control which packages are tested:
+
+```yaml
+# Omit packages to test the entire workspace
+- uses: Reloaded-Project/devops-rust-test-and-coverage@v1
+  with:
+    rust-project-path: 'my-workspace'
+
+# Specify package names to test only those
+- uses: Reloaded-Project/devops-rust-test-and-coverage@v1
+  with:
+    rust-project-path: 'my-workspace'
+    packages: |
+      my-core-lib
+      my-utils
+```
+
+Both `cargo`, `cross`, and Tarpaulin coverage respect the `packages` input.
+Use `codecov-flags` to segment coverage when testing
+different packages in parallel jobs.
+
+### Testing Multiple Targets
+
+Test across multiple platforms and targets using a matrix strategy:
 
 ```yaml
 name: Test and Coverage
@@ -108,11 +142,10 @@ jobs:
             use-cross: true
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Run Tests and Upload Coverage
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1
         with:
-          codecov-token: ${{ secrets.CODECOV_TOKEN }}
           features: 'feature1 feature2'
           no-default-features: true
           use-cross: ${{ matrix.use-cross }}
