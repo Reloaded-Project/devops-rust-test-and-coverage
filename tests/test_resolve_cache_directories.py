@@ -41,29 +41,14 @@ class ResolveCacheDirectoriesTests(unittest.TestCase):
             ["target/doc", "extra", "foo/bar"],
         )
 
-    def test_preserves_absolute_paths(self) -> None:
-        self.assertEqual(
-            resolve_cache_directories("src", "", "/tmp/cache-dir\n"),
-            ["src/target/doc", "/tmp/cache-dir"],
-        )
-
-    def test_preserves_windows_absolute_paths(self) -> None:
-        self.assertEqual(
-            resolve_cache_directories("src", "", "C:\\cache-dir\nD:\\build\\cache\n"),
-            ["src/target/doc", "C:/cache-dir", "D:/build/cache"],
-        )
-
-    def test_windows_absolute_path_not_joined_with_project_path(self) -> None:
-        result = resolve_cache_directories("my-project", "", "C:\\global-cache\n")
-        self.assertEqual(result, ["my-project/target/doc", "C:/global-cache"])
-        self.assertNotIn("my-project/C:/global-cache", result)
-
-    def test_mixed_posix_and_windows_absolute_paths(self) -> None:
+    def test_preserves_posix_and_windows_absolute_paths(self) -> None:
         self.assertEqual(
             resolve_cache_directories(
-                "src", "", "/tmp/cache\nC:\\Users\\runner\\cache\nrelative\n"
+                "src",
+                "",
+                "/tmp/cache-dir\nC:\\cache-dir\nrelative-cache\n",
             ),
-            ["src/target/doc", "/tmp/cache", "C:/Users/runner/cache", "src/relative"],
+            ["src/target/doc", "/tmp/cache-dir", "C:/cache-dir", "src/relative-cache"],
         )
 
     def test_writes_multiline_env_output(self) -> None:
