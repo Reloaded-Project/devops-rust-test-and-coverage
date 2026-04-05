@@ -47,6 +47,25 @@ class ResolveCacheDirectoriesTests(unittest.TestCase):
             ["src/target/doc", "/tmp/cache-dir"],
         )
 
+    def test_preserves_windows_absolute_paths(self) -> None:
+        self.assertEqual(
+            resolve_cache_directories("src", "", "C:\\cache-dir\nD:\\build\\cache\n"),
+            ["src/target/doc", "C:/cache-dir", "D:/build/cache"],
+        )
+
+    def test_windows_absolute_path_not_joined_with_project_path(self) -> None:
+        result = resolve_cache_directories("my-project", "", "C:\\global-cache\n")
+        self.assertEqual(result, ["my-project/target/doc", "C:/global-cache"])
+        self.assertNotIn("my-project/C:/global-cache", result)
+
+    def test_mixed_posix_and_windows_absolute_paths(self) -> None:
+        self.assertEqual(
+            resolve_cache_directories(
+                "src", "", "/tmp/cache\nC:\\Users\\runner\\cache\nrelative\n"
+            ),
+            ["src/target/doc", "/tmp/cache", "C:/Users/runner/cache", "src/relative"],
+        )
+
     def test_writes_multiline_env_output(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             env_file = Path(temp_dir) / "github-env.txt"

@@ -8,6 +8,7 @@ We always include the rustdoc output directory, then merge any extra
 
 from __future__ import annotations
 
+import ntpath
 import os
 import posixpath
 
@@ -112,7 +113,8 @@ def _qualify_path(path: str, project_path: str) -> str:
     if not path:
         return ""
 
-    if posixpath.isabs(path):
+    normalized_for_check = path.replace("\\", "/")
+    if posixpath.isabs(normalized_for_check) or ntpath.isabs(path):
         return _normalize_path(path)
 
     if project_path == ".":
