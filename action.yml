@@ -129,6 +129,7 @@ runs:
     # rust-cache prunes rustdoc output by default, so resolve the automatic
     # rustdoc path plus any caller-provided cache directories here.
     - name: Normalize rust-cache directories
+      if: inputs.setup-rust-cache == 'true'
       shell: bash
       run: python3 "${{ github.action_path }}/scripts/resolve_cache_directories.py"
       env:
