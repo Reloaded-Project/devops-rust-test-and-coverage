@@ -6,7 +6,7 @@ branding:
 
 inputs:
   rust-project-path:
-    description: "Path to the Rust project"
+    description: "Directory containing Cargo.toml (crate root or workspace root)"
     required: false
     default: "."
   rust-toolchain:
