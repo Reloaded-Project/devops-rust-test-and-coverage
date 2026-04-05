@@ -39,6 +39,7 @@ To use this action in your GitHub workflow, add the following step:
     target: 'x86_64-unknown-linux-gnu'
     install-rust-toolchain: true
     setup-rust-cache: true
+    cache-workspace-crates: true
     use-tarpaulin: true
     use-binstall: true
     install-binstall: true
@@ -66,6 +67,8 @@ To use this action in your GitHub workflow, add the following step:
 | `target`                    | The target platform for the Rust compiler                                                          | No       | `''`                 |
 | `install-rust-toolchain`    | Whether to install the specified Rust toolchain                                                    | No       | `true`               |
 | `setup-rust-cache`          | Whether to set up Rust caching                                                                     | No       | `true`               |
+| `cache-workspace-crates`    | Whether `rust-cache` should preserve workspace crate artifacts                                     | No       | `true`               |
+| `cache-directories`         | Extra cache directories, relative to `rust-project-path` unless absolute.                          | No       | `''`                 |
 | `use-tarpaulin`             | Whether to use Tarpaulin for code coverage. If false, only runs tests.                             | No       | `true`               |
 | `use-binstall`              | Use `cargo-binstall` for installing tarpaulin. Else uses cargo install.                            | No       | `true`               |
 | `install-binstall`          | Installs `cargo-binstall`. If false, assumes it is already available.                              | No       | `true`               |
@@ -169,7 +172,7 @@ This workflow runs on every push and performs the following steps:
 ### Multiple Action Calls
 
 If you're calling this action multiple times within the same job (e.g., testing different feature combinations),
-you can optimize build times by being selective about certain setup options on subsequent calls:
+you can optimise build times by being selective about certain setup options on subsequent calls:
 
 ```yaml
 # First call - full setup
@@ -192,7 +195,7 @@ you can optimize build times by being selective about certain setup options on s
     # ... other options
 ```
 
-**Key optimizations:**
+**Key optimisations:**
 
 - `setup-rust-cache: false` - Skip cache setup after the first call
 - `install-rust-toolchain: false` - Skip toolchain installation if already installed
@@ -208,6 +211,46 @@ The action automatically configures Rust caching based on your settings:
   - To prevent conflicts between `cargo-binstall` and the cache
   - Because it's assumed you'd use `cargo-binstall` for all CI tooling.
 - When `use-binstall` is disabled, binary caching is enabled for normal `cargo install` operations
+
+### Rustdoc Cache Behaviour
+
+This action caches the rustdoc output directory by default so later
+`cargo doc` steps can reuse generated documentation artifacts.
+
+It also configures `Swatinem/rust-cache` to keep workspace crate artifacts by
+default (`cache-workspace-crates: true`), which helps later `cargo clippy`,
+`cargo check`, and similar commands reuse more compiled outputs.
+
+If your workflow uses an explicit target triple, the cached doc path is:
+
+```text
+<rust-project-path>/target/<target-triple>/doc
+```
+
+Otherwise the cached doc path is:
+
+```text
+<rust-project-path>/target/doc
+```
+
+You can cache additional directories too:
+
+```yaml
+- name: Run Tests and Upload Coverage
+  uses: Reloaded-Project/devops-rust-test-and-coverage@v1
+  with:
+    rust-project-path: src
+    target: x86_64-pc-windows-msvc
+    cache-directories: |
+      target/custom-tool-cache
+      generated-api
+```
+
+In that example, the action caches all of the following:
+
+- `src/target/x86_64-pc-windows-msvc/doc` (automatic)
+- `src/target/custom-tool-cache`
+- `src/generated-api`
 
 ### Workflow for Binary Projects
 

@@ -17,6 +17,8 @@ on:
     branches: [v1-master]
     paths:
       - "action.yml"
+      - "scripts/**"
+      - "tests/**/*.py"
       - "README.MD"
       - ".github/workflows/test-packages-input.yml"
       - "tests/fixtures/packages-input-workspace/**"

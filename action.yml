@@ -25,6 +25,16 @@ inputs:
     description: "Whether to set up Rust caching"
     required: false
     default: "true"
+  cache-workspace-crates:
+    description: "Whether rust-cache should cache workspace crates"
+    required: false
+    default: "true"
+  cache-directories:
+    description: >-
+      Additional directories to cache, relative to rust-project-path unless
+      absolute. The rustdoc directory is cached automatically.
+    required: false
+    default: ""
   use-tarpaulin:
     description: "Whether to use Tarpaulin for code coverage. If false, only runs tests."
     required: false
@@ -116,6 +126,16 @@ runs:
         fi
         echo "PACKAGES_ARG=${PACKAGES_ARG}" >> $GITHUB_ENV
 
+    # rust-cache prunes rustdoc output by default, so resolve the automatic
+    # rustdoc path plus any caller-provided cache directories here.
+    - name: Normalize rust-cache directories
+      shell: bash
+      run: python3 "${{ github.action_path }}/scripts/resolve_cache_directories.py"
+      env:
+        INPUT_RUST_PROJECT_PATH: ${{ inputs.rust-project-path }}
+        INPUT_TARGET: ${{ inputs.target }}
+        INPUT_CACHE_DIRECTORIES: ${{ inputs.cache-directories }}
+
     - name: Install Rust Toolchain
       if: inputs.install-rust-toolchain == 'true'
       uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -132,12 +152,15 @@ runs:
       with:
         key:
           test-${{ inputs.rust-toolchain }}-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES
-          }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}
+          }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS
+          }}-${{ inputs.cache-workspace-crates }}
         cache-on-failure: true
         cache-all-crates: true
+        cache-workspace-crates: ${{ inputs.cache-workspace-crates }}
         cache-bin: ${{ inputs.use-binstall == 'true' && 'false' || 'true' }} # Disable binary caching when using binstall to avoid conflicts
         workspaces: |
           ${{ inputs.rust-project-path }} -> target
+        cache-directories: ${{ env.RUST_CACHE_DIRECTORIES }}
 
     - name: Install gcc-multilib (if on Ubuntu based System, and Target is not Host)
       if: inputs.use-cross == 'false' && runner.os == 'Linux'
