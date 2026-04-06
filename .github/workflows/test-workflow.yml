@@ -8,9 +8,20 @@ on:
     branches: [v1-master]
     paths:
       - "action.yml"
+      - "scripts/**"
+      - "tests/**/*.py"
       - ".github/workflows/test-workflow.yml"
 
 jobs:
+  test-python-helper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v6
+      - name: Run helper unit tests
+        shell: bash
+        run: python3 -m unittest tests/test_resolve_cache_directories.py
+
   test-coverage-build:
     strategy:
       matrix:
