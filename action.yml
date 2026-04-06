@@ -196,10 +196,14 @@ runs:
     - name: Install cargo-binstall
       if: inputs.install-binstall == 'true'
       uses: cargo-bins/cargo-binstall@main
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Install Tarpaulin (via binstall)
       if: inputs.use-cross == 'false' && inputs.use-tarpaulin == 'true' && inputs.use-binstall == 'true'
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       run: |
         # The force here is kinda forced for back compat reasons, else cargo might not pick up the binary;
         # while binstall thinks it's there due to caching. Current versions wouldn't cache preinstalled cargo-tarpaulin
