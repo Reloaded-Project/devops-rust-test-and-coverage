@@ -109,6 +109,14 @@ runs:
         SAFE_PACKAGES=$(echo "${{ inputs.packages }}" | tr -d '\r' | tr '\n\t' '  ' | tr -s ' ' | sed 's/^ *//;s/ *$//')
         echo "SAFE_PACKAGES=${SAFE_PACKAGES}" >> $GITHUB_ENV
 
+        if [ -z "$SAFE_PACKAGES" ]; then
+          SAFE_PACKAGES_KEY="all-packages"
+        else
+          # rust-cache rejects commas in cache keys, so use a cache-safe separator.
+          SAFE_PACKAGES_KEY=$(echo "$SAFE_PACKAGES" | tr ' ' '+')
+        fi
+        echo "SAFE_PACKAGES_KEY=${SAFE_PACKAGES_KEY}" >> $GITHUB_ENV
+
         # Build packages argument once and reuse across steps
         if [ -n "$SAFE_PACKAGES" ]; then
           PACKAGES_ARG=""
@@ -153,8 +161,8 @@ runs:
       with:
         key:
           test-${{ inputs.rust-toolchain }}-${{ inputs.rust-project-path }}-${{ inputs.target }}-${{ env.SAFE_FEATURES
-          }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS
-          }}-${{ inputs.cache-workspace-crates }}
+          }}-${{ inputs.no-default-features }}-${{ inputs.use-cross }}-${{ env.SAFE_PACKAGES_KEY
+          }}-${{ env.SAFE_ADDITIONAL_TEST_ARGS }}-${{ inputs.cache-workspace-crates }}
         cache-on-failure: true
         cache-all-crates: true
         cache-workspace-crates: ${{ inputs.cache-workspace-crates }}
