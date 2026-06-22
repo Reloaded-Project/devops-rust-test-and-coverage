@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Checkout Action Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Clean package markers
         shell: bash
