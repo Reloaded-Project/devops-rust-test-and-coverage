@@ -147,7 +147,7 @@ runs:
 
     - name: Install Rust Toolchain
       if: inputs.install-rust-toolchain == 'true'
-      uses: actions-rust-lang/setup-rust-toolchain@v1
+      uses: actions-rust-lang/setup-rust-toolchain@v2
       with:
         toolchain: ${{ inputs.rust-toolchain }}
         target: ${{ inputs.target }}
